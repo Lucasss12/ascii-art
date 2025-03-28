@@ -33,44 +33,16 @@ export default function App() {
     return sortedAsciiChars[index].char;
   };
 
-  const resizeImage = (img, maxWidth = 150, maxHeight = 100) => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    // Ajuster les dimensions pour compenser le ratio des caractères ASCII
-    const aspectRatioCompensation = 0.5; // Car les caractères sont plus hauts que larges
-    const targetAspectRatio = (maxWidth / maxHeight) * aspectRatioCompensation;
-    const imgAspectRatio = img.width / img.height;
-    
-    let newWidth, newHeight;
-    
-    if (imgAspectRatio > targetAspectRatio) {
-      // Image plus large que haute
-      newWidth = maxWidth;
-      newHeight = Math.floor(maxWidth / imgAspectRatio);
-    } else {
-      // Image plus haute que large
-      newHeight = maxHeight;
-      newWidth = Math.floor(maxHeight * imgAspectRatio);
-    }
-    
-    canvas.width = newWidth;
-    canvas.height = newHeight;
-    
-    ctx.drawImage(img, 0, 0, newWidth, newHeight);
-    return canvas;
-  };
-
   useEffect(() => {
     if (image) {
       const canvas = canvaRef.current;
       const context = canvas.getContext("2d");
 
-      const resizedCanvas = resizeImage(image);
-      canvas.height = resizedCanvas.height;
-      canvas.width = resizedCanvas.width;
+      const scaleFactor = 0.10; 
+      canvas.height = image.height * scaleFactor;
+      canvas.width = image.width * scaleFactor;
 
-      context.drawImage(resizedCanvas, 0, 0);
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
 
       const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
       const pixels = imageData.data;
@@ -98,21 +70,20 @@ export default function App() {
   }, [image]);
 
   return (
-    <div className="mx-10 my-10">
+    <div className="mx-10 my-20 max-w-screen-lg lg:mx-auto">
       <label
         htmlFor="file-upload"
-        className={`w-full border flex flex-col justify-center items-center rounded-xl border-dashed ${
-          image ? "h-fit" : "h-96"
-        } cursor-pointer relative group`}
+        className={`w-full border flex flex-col justify-center items-center rounded-xl border-dashed min-h-96 cursor-pointer relative group`}
       >
         {image ? (
-          <div className="relative w-full h-full flex justify-center items-center">
+          <div className="relative w-full rounded-xl">
             <pre
+              className="w-full h-full flex justify-center items-center"
               style={{
-                whiteSpace: "pre-wrap",
+                whiteSpace: "pre",
                 fontFamily: "monospace",
-                fontSize: "10px", // Augmenté de 8px à 10px
-                lineHeight: "0.8", // Ajout d'un line-height plus serré
+                fontSize: "10px",
+                lineHeight: "0.8",
               }}
             >
               {asciiArt}
