@@ -2,42 +2,44 @@ function getAsciiDensity(char) {
   // Créer un canvas et obtenir son contexte
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
-
-  context.font = "30px monospace";
-
-  // Mesurer la largeur du texte
-  const textWidth = context.measureText(char).width;
-
-  // La hauteur du texte est constante pour la police que l'on utilise
-  const textHeight = 30;  
-
-  canvas.width = textWidth;
-  canvas.height = textHeight;
-
-  // Dessiner le caractère dans le canvas
+  
+  // Définir dimensions fixes pour tous les caractères
+  canvas.width = 30;
+  canvas.height = 30;
+  
+  // Configuration du texte
+  context.font = "24px monospace";
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  
+  // Effacer le canvas avec du blanc
+  context.fillStyle = "white";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  
+  // Dessiner le caractère au centre du canvas
   context.fillStyle = "black"; 
-  context.fillText(char, 0, textHeight);
-
+  context.fillText(char, canvas.width/2, canvas.height/2);
+  
   // Obtenir les données de l'image
   const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
   const pixels = imageData.data;
-
-  // Compter le nombre de pixels "noirs" (non transparents)
+  
+  // Compter le nombre de pixels "noirs" (ou foncés)
   let filledPixels = 0;
+  const threshold = 200; // Valeur seuil pour déterminer si un pixel est foncé
+  
   for (let i = 0; i < pixels.length; i += 4) {
     const r = pixels[i];     
     const g = pixels[i + 1]; 
     const b = pixels[i + 2]; 
-    const a = pixels[i + 3]; 
-
-    // Si le pixel est "noir" (ou proche du noir), on compte ce pixel
-    if (r === 0 && g === 0 && b === 0 && a > 0) {
+    
+    // Si le pixel est foncé (en dessous du seuil), on le compte
+    if (r < threshold && g < threshold && b < threshold) {
       filledPixels++;
     }
   }
-
-  const density = filledPixels;  
-  return density;
+  
+  return filledPixels;
 }
 
 const asciiChars = [
